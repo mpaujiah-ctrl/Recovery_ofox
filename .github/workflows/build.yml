@@ -84,11 +84,11 @@ jobs:
       - name: Build
         run: |
           cd ~/fox_${{ github.event.inputs.manifest_branch }}
+          set -x
           source build/envsetup.sh
           export ALLOW_MISSING_DEPENDENCIES=true
           export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
           export LC_ALL=C
-          set -x
           lunch ${{ github.event.inputs.lunch_target }}
           mka ${{ github.event.inputs.build_target }} -j$(nproc --all)
 
