@@ -82,9 +82,9 @@ jobs:
             ~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}
 
       - name: Build
+        shell: bash --noprofile --norc -o pipefail {0}
         run: |
           cd ~/fox_${{ github.event.inputs.manifest_branch }}
-          set -x
           source build/envsetup.sh
           export ALLOW_MISSING_DEPENDENCIES=true
           export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
