@@ -86,6 +86,7 @@ jobs:
         run: |
           cd ~/fox_${{ github.event.inputs.manifest_branch }}
           source build/envsetup.sh
+          export FOX_ENABLE_KERNELSU_NEXT_SUPPORT=0
           export ALLOW_MISSING_DEPENDENCIES=true
           export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
           export LC_ALL=C
