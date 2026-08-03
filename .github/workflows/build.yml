@@ -31,6 +31,10 @@ on:
         description: 'Target make (recoveryimage / bootimage)'
         required: true
         default: 'recoveryimage'
+      custom_fstab_url:
+        description: 'Raw URL recovery.fstab custom (kosongkan buat pakai punya device tree asli)'
+        required: false
+        default: 'https://raw.githubusercontent.com/<username>/<repo-fstab>/main/recovery.fstab'
 
 jobs:
   build:
@@ -80,6 +84,15 @@ jobs:
           git clone ${{ github.event.inputs.device_tree_url }} \
             -b ${{ github.event.inputs.device_tree_branch }} \
             ~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}
+
+      - name: Overwrite fstab with custom version
+        if: ${{ github.event.inputs.custom_fstab_url != '' }}
+        run: |
+          FSTAB_PATH=~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}/recovery/root/system/etc/recovery.fstab
+          echo "Menimpa fstab di: $FSTAB_PATH"
+          curl -fsSL "${{ github.event.inputs.custom_fstab_url }}" -o "$FSTAB_PATH"
+          echo "--- Isi fstab setelah ditimpa ---"
+          cat "$FSTAB_PATH"
 
       - name: Build
         shell: bash --noprofile --norc -o pipefail {0}
