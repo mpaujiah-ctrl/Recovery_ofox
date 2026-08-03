@@ -33,8 +33,8 @@ on:
         default: 'recoveryimage'
       custom_fstab_url:
         description: 'Raw URL recovery.fstab custom (kosongkan buat pakai punya device tree asli)'
-        required: false
-        default: 'https://raw.githubusercontent.com/<username>/<repo-fstab>/main/recovery.fstab'
+        required: true
+        default: 'https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/recovery.fstab'
 
 jobs:
   build:
