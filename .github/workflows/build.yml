@@ -91,7 +91,7 @@ jobs:
           FSTAB_PATH=~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}/recovery/root/system/etc/recovery.fstab
           echo "Menimpa fstab di: $FSTAB_PATH"
           curl -fsSL "${{ github.event.inputs.custom_fstab_url }}" -o "$FSTAB_PATH"
-          echo "--- Isi fstab setelah ditimpa ---"
+          echo "https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/recovery.fstab"
           cat "$FSTAB_PATH"
 
       - name: Build
