@@ -103,17 +103,17 @@ jobs:
           export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
           export LC_ALL=C
 
-          # --- Full-featured OrangeFox flags ---
+          # --- Full-featured OrangeFox flags (verified against fox_12.1 build vars list) ---
           export FOX_ENABLE_KERNELSU_NEXT_SUPPORT=1   # menu install/manage KSU module langsung dari UI recovery
           export FOX_DELETE_AROMAFM=0                 # jangan hapus AromaFM (installer berbasis GUI)
-          export OF_USE_MAGISKBOOT=1                  # pakai magiskboot buat unpack/repack boot image
-          export FOX_ADVANCED_SECURITY=1              # menu keamanan lanjutan di OrangeFox
-          export OF_USE_LOCKSCREEN_DISABLER=1          # bisa disable lockscreen dari recovery
-          export OF_ENABLE_LPTOOLS=1                   # tools resize dynamic partition (super.img)
-          export FOX_ENABLE_APP_MANAGER=1              # App Manager (install/uninstall/freeze apk dari recovery)
-          export OF_QUICK_BACKUP_LIST="/boot;/system;/vendor;/data;"  # daftar default quick backup
+          export OF_ADVANCED_SECURITY=1               # menu keamanan lanjutan (nama baru, FOX_ADVANCED_SECURITY udah obsolete)
+          export OF_USE_LOCKSCREEN_BUTTON=1           # tombol unlock, pengganti swipe-to-unlock
+          export OF_ENABLE_LPTOOLS=1                  # tools resize dynamic partition (super.img)
+          export FOX_ENABLE_APP_MANAGER=1             # App Manager (install/uninstall/freeze apk dari recovery)
+          export OF_QUICK_BACKUP_LIST="/data;/persist_image;/boot;"  # partisi default tercentang di Quick Backup
           export OF_USE_GREEN_LED=0
           export OF_MAINTAINER="${{ github.actor }}"
+          # NOTE: OF_USE_MAGISKBOOT dihapus - sekarang enabled otomatis di semua build fox_12.1, export manual malah bisa error
 
           lunch ${{ github.event.inputs.lunch_target }}
           mka ${{ github.event.inputs.build_target }} -j$(nproc --all)
