@@ -104,8 +104,9 @@ jobs:
           export LC_ALL=C
 
           # --- Full-featured OrangeFox flags (verified against fox_12.1 build vars list) ---
-          # FOX_ENABLE_KERNELSU_NEXT_SUPPORT dihapus - fitur ini cuma valid buat device Virtual A/B
-          # dengan kernel GKI 5.x/6.x. cepheus pake kernel 4.14 non-GKI, jadi gak compatible.
+          export FOX_ENABLE_KERNELSU_NEXT_SUPPORT=0   # WAJIB eksplisit =0, bukan dihapus - kalau di-omit, orangefox.mk default-in ke 1
+                                                        # dan itu nabrak validasi "only valid for Virtual_AB + GKI 5.x/6.x kernel"
+                                                        # cepheus = A-only, kernel 4.14 non-GKI, jadi wajib off eksplisit
           export FOX_DELETE_AROMAFM=0                 # jangan hapus AromaFM (installer berbasis GUI)
           export OF_ADVANCED_SECURITY=1               # menu keamanan lanjutan (nama baru, FOX_ADVANCED_SECURITY udah obsolete)
           export OF_USE_LOCKSCREEN_BUTTON=1           # tombol unlock, pengganti swipe-to-unlock
