@@ -104,7 +104,8 @@ jobs:
           export LC_ALL=C
 
           # --- Full-featured OrangeFox flags (verified against fox_12.1 build vars list) ---
-          export FOX_ENABLE_KERNELSU_NEXT_SUPPORT=1   # menu install/manage KSU module langsung dari UI recovery
+          # FOX_ENABLE_KERNELSU_NEXT_SUPPORT dihapus - fitur ini cuma valid buat device Virtual A/B
+          # dengan kernel GKI 5.x/6.x. cepheus pake kernel 4.14 non-GKI, jadi gak compatible.
           export FOX_DELETE_AROMAFM=0                 # jangan hapus AromaFM (installer berbasis GUI)
           export OF_ADVANCED_SECURITY=1               # menu keamanan lanjutan (nama baru, FOX_ADVANCED_SECURITY udah obsolete)
           export OF_USE_LOCKSCREEN_BUTTON=1           # tombol unlock, pengganti swipe-to-unlock
