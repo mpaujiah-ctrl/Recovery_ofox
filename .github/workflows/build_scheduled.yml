@@ -1,0 +1,155 @@
+name: Build OrangeFox - cepheus
+
+on:
+  # Rebuild otomatis tiap tanggal 1 jam 00:00 UTC (07:00 WIB), ambil source OrangeFox
+  # terbaru + device tree terbaru dari JoK3rLeE - gak perlu nunggu dia rilis manual.
+  # Ganti angka cron kalau mau frekuensi lain, contoh:
+  #   '0 0 * * 0'    -> tiap Minggu jam 00:00 UTC (mingguan)
+  #   '0 0 1,15 * *' -> tanggal 1 & 15 tiap bulan (2x sebulan)
+  schedule:
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+    inputs:
+      device_tree_url:
+        description: 'URL device tree'
+        required: true
+        default: 'https://github.com/JoK3rLeE/twrp_cepheus'
+      device_tree_branch:
+        description: 'Branch device tree'
+        required: true
+        default: 'ofox_12.1-legacy'
+      manifest_branch:
+        description: 'OrangeFox manifest branch'
+        required: true
+        default: '12.1'
+      device_name:
+        description: 'Codename device'
+        required: true
+        default: 'cepheus'
+      device_path:
+        description: 'Path device tree di dalam source tree'
+        required: true
+        default: 'device/xiaomi/cepheus'
+      lunch_target:
+        description: 'Lunch combo (lihat AndroidProducts.mk / COMMON_LUNCH_CHOICES)'
+        required: true
+        default: 'twrp_cepheus-eng'
+      build_target:
+        description: 'Target make (recoveryimage / bootimage)'
+        required: true
+        default: 'recoveryimage'
+      custom_fstab_url:
+        description: 'Raw URL recovery.fstab custom (kosongkan buat pakai punya device tree asli)'
+        required: true
+        default: 'https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/recovery.fstab'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 300
+    env:
+      # Fallback default dipakai kalau workflow ke-trigger otomatis lewat "schedule"
+      # (event schedule gak punya inputs sama sekali, beda dari workflow_dispatch).
+      DEVICE_TREE_URL: ${{ github.event.inputs.device_tree_url || 'https://github.com/JoK3rLeE/twrp_cepheus' }}
+      DEVICE_TREE_BRANCH: ${{ github.event.inputs.device_tree_branch || 'ofox_12.1-legacy' }}
+      MANIFEST_BRANCH: ${{ github.event.inputs.manifest_branch || '12.1' }}
+      DEVICE_NAME: ${{ github.event.inputs.device_name || 'cepheus' }}
+      DEVICE_PATH: ${{ github.event.inputs.device_path || 'device/xiaomi/cepheus' }}
+      LUNCH_TARGET: ${{ github.event.inputs.lunch_target || 'twrp_cepheus-eng' }}
+      BUILD_TARGET: ${{ github.event.inputs.build_target || 'recoveryimage' }}
+      CUSTOM_FSTAB_URL: ${{ github.event.inputs.custom_fstab_url || 'https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/recovery.fstab' }}
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
+      - name: Setup build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc bison build-essential ccache curl \
+            flex g++-multilib gcc-multilib git gnupg gperf imagemagick \
+            lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool \
+            libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 \
+            libxml2-utils lzop pngcrush rsync schedtool squashfs-tools \
+            xsltproc zip zlib1g-dev python3 python-is-python3 openjdk-8-jdk
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global color.ui false
+
+      - name: Install repo tool
+        run: |
+          mkdir -p ~/.bin
+          curl -sSL https://storage.googleapis.com/git-repo-downloads/repo > ~/.bin/repo
+          chmod +x ~/.bin/repo
+          echo "$HOME/.bin" >> $GITHUB_PATH
+
+      - name: Sync OrangeFox source (fox_${{ env.MANIFEST_BRANCH }})
+        run: |
+          mkdir -p ~/OrangeFox_sync
+          git clone https://gitlab.com/OrangeFox/sync.git ~/OrangeFox_sync/sync
+          cd ~/OrangeFox_sync/sync
+          ./orangefox_sync.sh --branch ${{ env.MANIFEST_BRANCH }} --path ~/fox_${{ env.MANIFEST_BRANCH }}
+
+      - name: Clone device tree
+        run: |
+          rm -rf ~/fox_${{ env.MANIFEST_BRANCH }}/${{ env.DEVICE_PATH }}
+          git clone ${{ env.DEVICE_TREE_URL }} \
+            -b ${{ env.DEVICE_TREE_BRANCH }} \
+            ~/fox_${{ env.MANIFEST_BRANCH }}/${{ env.DEVICE_PATH }}
+
+      - name: Overwrite fstab with custom version
+        if: ${{ env.CUSTOM_FSTAB_URL != '' }}
+        run: |
+          FSTAB_PATH=~/fox_${{ env.MANIFEST_BRANCH }}/${{ env.DEVICE_PATH }}/recovery/root/system/etc/recovery.fstab
+          echo "Menimpa fstab di: $FSTAB_PATH"
+          curl -fsSL "${{ env.CUSTOM_FSTAB_URL }}" -o "$FSTAB_PATH"
+          cat "$FSTAB_PATH"
+
+      - name: Build
+        shell: bash --noprofile --norc -o pipefail {0}
+        run: |
+          cd ~/fox_${{ env.MANIFEST_BRANCH }}
+          source build/envsetup.sh
+          export ALLOW_MISSING_DEPENDENCIES=true
+          export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
+          export LC_ALL=C
+
+          # --- Full-featured OrangeFox flags (verified against fox_12.1 build vars list) ---
+          export FOX_ENABLE_KERNELSU_NEXT_SUPPORT=0   # WAJIB eksplisit =0, bukan dihapus - kalau di-omit, orangefox.mk default-in ke 1
+                                                        # dan itu nabrak validasi "only valid for Virtual_AB + GKI 5.x/6.x kernel"
+                                                        # cepheus = A-only, kernel 4.14 non-GKI, jadi wajib off eksplisit
+          export FOX_DELETE_AROMAFM=0                 # jangan hapus AromaFM (installer berbasis GUI)
+          export OF_ADVANCED_SECURITY=1               # menu keamanan lanjutan (nama baru, FOX_ADVANCED_SECURITY udah obsolete)
+          export OF_USE_LOCKSCREEN_BUTTON=1           # tombol unlock, pengganti swipe-to-unlock
+          export OF_ENABLE_LPTOOLS=1                  # tools resize dynamic partition (super.img)
+          export FOX_ENABLE_APP_MANAGER=1             # App Manager (install/uninstall/freeze apk dari recovery)
+          export OF_QUICK_BACKUP_LIST="/data;/persist_image;/boot;"  # partisi default tercentang di Quick Backup
+          export OF_USE_GREEN_LED=0
+          export OF_MAINTAINER="${{ github.actor }}"
+          # NOTE: OF_USE_MAGISKBOOT dihapus - sekarang enabled otomatis di semua build fox_12.1, export manual malah bisa error
+
+          lunch ${{ env.LUNCH_TARGET }}
+          mka ${{ env.BUILD_TARGET }} -j$(nproc --all)
+
+      - name: Locate output
+        id: out
+        run: |
+          OUT_DIR=~/fox_${{ env.MANIFEST_BRANCH }}/out/target/product/${{ env.DEVICE_NAME }}
+          echo "out_dir=$OUT_DIR" >> $GITHUB_OUTPUT
+          ls -la "$OUT_DIR" | grep -iE 'orangefox|recovery|\.img|\.zip' || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OrangeFox-cepheus-${{ github.run_number }}
+          path: |
+            ${{ steps.out.outputs.out_dir }}/OrangeFox*.zip
+            ${{ steps.out.outputs.out_dir }}/recovery.img
+          if-no-files-found: warn
+          retention-days: 14
