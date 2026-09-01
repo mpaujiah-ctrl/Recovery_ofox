@@ -10,7 +10,7 @@ on:
       device_tree_branch:
         description: 'Branch device tree'
         required: true
-        default: 'ofox_12.1-legacy'
+        default: 'ofox_12.1_retrofit_metadata'
       manifest_branch:
         description: 'OrangeFox manifest branch'
         required: true
@@ -33,8 +33,8 @@ on:
         default: 'recoveryimage'
       custom_fstab_url:
         description: 'Raw URL recovery.fstab custom (kosongkan buat pakai punya device tree asli)'
-        required: true
-        default: 'https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/recovery.fstab'
+        required: false
+        default: ''
 
 jobs:
   build:
