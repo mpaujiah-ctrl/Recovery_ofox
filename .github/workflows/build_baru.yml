@@ -10,7 +10,7 @@ on:
       device_tree_branch:
         description: 'Branch device tree'
         required: true
-        default: 'ofox_12.1_retrofit_metadata'
+        default: 'ofox_12.1_retrofit'
       manifest_branch:
         description: 'OrangeFox manifest branch'
         required: true
