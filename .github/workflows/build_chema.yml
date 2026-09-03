@@ -14,7 +14,7 @@ on:
       manifest_branch:
         description: 'OrangeFox manifest branch'
         required: true
-        default: '12.1'
+        default: '14.1'
       device_name:
         description: 'Codename device'
         required: true
