@@ -119,6 +119,7 @@ jobs:
                                                         # dan itu nabrak validasi "only valid for Virtual_AB + GKI 5.x/6.x kernel"
                                                         # cepheus = A-only, kernel 4.14 non-GKI, jadi wajib off eksplisit
           export FOX_DELETE_AROMAFM=0                 # jangan hapus AromaFM (installer berbasis GUI)
+          export OF_NO_TREBLE_COMPATIBILITY_CHECK=0
           export OF_ADVANCED_SECURITY=1               # menu keamanan lanjutan (nama baru, FOX_ADVANCED_SECURITY udah obsolete)
           export OF_USE_LOCKSCREEN_BUTTON=1           # tombol unlock, pengganti swipe-to-unlock
           export OF_ENABLE_LPTOOLS=1                  # tools resize dynamic partition (super.img)
