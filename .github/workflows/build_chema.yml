@@ -94,6 +94,9 @@ jobs:
           echo "https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/recovery.fstab"
           cat "$FSTAB_PATH"
 
+      - name: Overwrite BoardConfig.mk with custom version
+        run: cp patches/BoardConfig.mk device/xiaomi/cepheus/BoardConfig.mk
+      
       - name: Build
         shell: bash --noprofile --norc -o pipefail {0}
         run: |
