@@ -129,3 +129,6 @@ TARGET_SYSTEM_PROP += $(DEVICE_PATH)/system.prop
 # Recovery
 BOARD_HAS_LARGE_FILESYSTEM := true
 TARGET_RECOVERY_PIXEL_FORMAT := BGRA_8888
+
+# TWRP specific build flags
+TW_THEME := portrait_hdpi
