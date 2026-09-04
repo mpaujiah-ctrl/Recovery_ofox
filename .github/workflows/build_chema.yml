@@ -95,7 +95,7 @@ jobs:
           cat "$FSTAB_PATH"
 
       - name: Overwrite BoardConfig.mk with custom version
-        run: cp patches/BoardConfig.mk device/xiaomi/cepheus/BoardConfig.mk
+        run: cp BoardConfig.mk device/xiaomi/cepheus/BoardConfig.mk
       
       - name: Build
         shell: bash --noprofile --norc -o pipefail {0}
