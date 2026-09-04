@@ -35,7 +35,10 @@ on:
         description: 'Raw URL recovery.fstab custom (kosongkan buat pakai punya device tree asli)'
         required: true
         default: 'https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/recovery.fstab'
-
+      custom_BoardConfig_url:
+        description: 'BoardConfig.mk custom'
+        required: true
+        default: 'https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/BoardConfig.mk'
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -95,7 +98,13 @@ jobs:
           cat "$FSTAB_PATH"
 
       - name: Overwrite BoardConfig.mk with custom version
-        run: cp BoardConfig.mk device/xiaomi/cepheus/BoardConfig.mk
+        if: ${{ github.event.inputs.custom_BoardConfig_url != '' }}
+        run: |
+          BOARDCONFIG_PATH=~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}/device/xiaomi/cepheus/BoardConfig.mk
+          echo "Menimpa fstab di: $BOARDCONFIG_PATH"
+          curl -fsSL "${{ github.event.inputs.custom_fstab_url }}" -o "$BOARDCONFIG_PATH"
+          echo "https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/recovery.fstab"
+          cat "$BOARDCONFIG_PATH"
       
       - name: Build
         shell: bash --noprofile --norc -o pipefail {0}
