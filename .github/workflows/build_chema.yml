@@ -98,12 +98,10 @@ jobs:
           cat "$FSTAB_PATH"
 
       - name: Overwrite BoardConfig.mk with custom version
-        if: ${{ github.event.inputs.custom_BoardConfig_url != '' }}
         run: |
-          BOARDCONFIG_PATH=~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}/device/xiaomi/cepheus/BoardConfig.mk
-          echo "Menimpa fstab di: $BOARDCONFIG_PATH"
-          curl -fsSL "${{ github.event.inputs.custom_fstab_url }}" -o "$BOARDCONFIG_PATH"
-          echo "https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/recovery.fstab"
+          BOARDCONFIG_PATH=~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}/BoardConfig.mk
+          echo "Menimpa BoardConfig.mk di: $BOARDCONFIG_PATH"
+          curl -fsSL "https://raw.githubusercontent.com/mpaujiah-ctrl/Recovery_ofox/main/BoardConfig.mk" -o "$BOARDCONFIG_PATH"
           cat "$BOARDCONFIG_PATH"
       
       - name: Build
