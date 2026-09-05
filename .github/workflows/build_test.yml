@@ -114,6 +114,8 @@ jobs:
           export FOX_ENABLE_APP_MANAGER=1             # App Manager (install/uninstall/freeze apk dari recovery)
           export OF_QUICK_BACKUP_LIST="/data;/persist_image;/boot;"  # partisi default tercentang di Quick Backup
           export OF_USE_GREEN_LED=0
+          export TARGET_RELEASE=ap2a
+          export TW_THEME=portrait_hdpi
           export OF_MAINTAINER="${{ github.actor }}"
           # NOTE: OF_USE_MAGISKBOOT dihapus - sekarang enabled otomatis di semua build fox_12.1, export manual malah bisa error
 
