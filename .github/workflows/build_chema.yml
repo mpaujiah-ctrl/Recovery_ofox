@@ -26,7 +26,7 @@ on:
       lunch_target:
         description: 'Lunch combo (lihat AndroidProducts.mk / COMMON_LUNCH_CHOICES)'
         required: true
-        default: 'twrp_cepheus-ap2a-eng'
+        default: 'twrp_cepheus-ap2a-userdebug'
       build_target:
         description: 'Target make (recoveryimage / bootimage)'
         required: true
