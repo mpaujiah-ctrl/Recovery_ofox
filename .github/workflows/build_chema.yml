@@ -121,6 +121,14 @@ jobs:
           cp "$TREE_ROOT/recovery/root/system/etc/twrp.flags" "$TREE_ROOT/fstab/twrp.flags"
           cat "$TREE_ROOT/fstab/twrp.flags"
       
+      - name: Copy fstab files to expected path
+        run: |
+          TREE_ROOT=~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}
+          mkdir -p "$TREE_ROOT/fstab"
+          cp "$TREE_ROOT/recovery/root/system/etc/twrp.flags" "$TREE_ROOT/fstab/twrp.flags"
+          cp "$TREE_ROOT/recovery/root/system/etc/recovery.fstab" "$TREE_ROOT/fstab/recovery.fstab"
+          cat "$TREE_ROOT/fstab/recovery.fstab"
+      
       - name: Build
         shell: bash --noprofile --norc -o pipefail {0}
         run: |
