@@ -114,10 +114,12 @@ jobs:
           curl -fsSL "${{ github.event.inputs.custom_BoardConfig_url }}" -o "$BOARDCONFIG_PATH"
           cat "$BOARDCONFIG_PATH"
       
-      - name: Create missing twrp.flags placeholder
+      - name: Copy twrp.flags to expected fstab path
         run: |
-          mkdir -p ~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}/fstab
-          touch ~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}/fstab/twrp.flags
+          TREE_ROOT=~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}
+          mkdir -p "$TREE_ROOT/fstab"
+          cp "$TREE_ROOT/recovery/root/system/etc/twrp.flags" "$TREE_ROOT/fstab/twrp.flags"
+          cat "$TREE_ROOT/fstab/twrp.flags"
       
       - name: Build
         shell: bash --noprofile --norc -o pipefail {0}
