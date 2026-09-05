@@ -114,6 +114,11 @@ jobs:
           curl -fsSL "${{ github.event.inputs.custom_BoardConfig_url }}" -o "$BOARDCONFIG_PATH"
           cat "$BOARDCONFIG_PATH"
       
+      - name: Create missing twrp.flags placeholder
+        run: |
+          mkdir -p ~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}/fstab
+          touch ~/fox_${{ github.event.inputs.manifest_branch }}/${{ github.event.inputs.device_path }}/fstab/twrp.flags
+      
       - name: Build
         shell: bash --noprofile --norc -o pipefail {0}
         run: |
